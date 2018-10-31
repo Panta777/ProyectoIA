@@ -22,8 +22,9 @@ import * as normalization from './normalization';
 import * as ui from './ui';
 
 // Some hyperparameters for model training.
-const NUM_EPOCHS = 200;
-const BATCH_SIZE = 40;
+// INFO: https://towardsdatascience.com/epoch-vs-iterations-vs-batch-size-4dfb9c7ce9c9
+const NUM_EPOCHS = 200;//Cantidad de veces a entrenar , debe ser una medidad discreta
+const BATCH_SIZE = 40;// 
 const LEARNING_RATE = 0.01;
 
 const bostonData = new BostonHousingDataset();
@@ -144,7 +145,7 @@ export const run = async (model, weightsIllustration) => {
         validationSplit: 0.2,
         callbacks: {
             onEpochEnd: async (epoch, logs) => {
-                await ui.updateStatus(`Epoch ${epoch + 1} of ${NUM_EPOCHS} completed.`);
+                await ui.updateStatus(`Epoch ${epoch + 1} de  ${NUM_EPOCHS} completado.`);
                 trainLoss = logs.loss;
                 valLoss = logs.val_loss;
                 await ui.plotData(epoch, trainLoss, valLoss);
