@@ -30,7 +30,7 @@ export const updateBaselineStatus = (message) => {
 };
 
 // const weightsElement = document.getElementById('modelInspectionOutput');
-const NUM_TOP_WEIGHTS_TO_DISPLAY = 5;
+const NUM_TOP_WEIGHTS_TO_DISPLAY = 8;
 /**
  * Updates the weights output area to include information about the weights
  * learned in a simple linear model.
@@ -40,7 +40,7 @@ export const updateWeightDescription = (weightsList) => {
     const inspectionHeadlineElement =
             document.getElementById('inspectionHeadline');
     inspectionHeadlineElement.value =
-            `Top ${NUM_TOP_WEIGHTS_TO_DISPLAY} weights by magnitude`;
+            `Top ${NUM_TOP_WEIGHTS_TO_DISPLAY} medidas por magnitud`;
     // Sort weights objects by descending absolute value.
     weightsList.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
     var table = document.getElementById('myTable');

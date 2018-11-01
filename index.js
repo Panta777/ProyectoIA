@@ -22,9 +22,11 @@ import * as normalization from './normalization';
 import * as ui from './ui';
 
 // Some hyperparameters for model training.
+// https://github.com/mGalarnyk/datasciencecoursera/blob/master/Stanford_Machine_Learning/Week4/week3quiz1.md
 // INFO: https://towardsdatascience.com/epoch-vs-iterations-vs-batch-size-4dfb9c7ce9c9
-const NUM_EPOCHS = 200;//Cantidad de veces a entrenar , debe ser una medidad discreta
-const BATCH_SIZE = 40;// 
+
+var NUM_EPOCHS = 200;//es el número de veces que el modelo está expuesto al conjunto de datos de entrenamiento,debe ser una medidad a  discresion del volumen de data a evaluar
+var BATCH_SIZE = 40;// es el número de instancias de entrenamiento mostradas al modelo antes de que se realice una actualización de peso.
 const LEARNING_RATE = 0.01;
 
 const bostonData = new BostonHousingDataset();
@@ -113,9 +115,7 @@ export function multiLayerPerceptronRegressionModel2Hidden() {
  * @returns {List} List of objects, each with a string feature name, and value feature weight.
  */
 export function describeKerenelElements(kernel) {
-    tf.util.assert(
-            kernel.length == 12,
-            `kernel must be a array of length 12, got ${kernel.length}`);
+    tf.util.assert(kernel.length == 12, `kernel must be a array of length 12, got ${kernel.length}`);
     const outList = [];
     for (let idx = 0; idx < kernel.length; idx++) {
         outList.push({description: featureDescriptions[idx], value: kernel[idx]});
@@ -132,13 +132,33 @@ export function describeKerenelElements(kernel) {
  *  weights.
  */
 export const run = async (model, weightsIllustration) => {
-    await ui.updateStatus('Compiling model...');
-    model.compile(
-            {optimizer: tf.train.sgd(LEARNING_RATE), loss: 'meanSquaredError'});
-
+    await ui.updateStatus('Compilando modelo...');
+    /*  https://keras.io/optimizers/ */
+    model.compile({optimizer: tf.train.sgd(LEARNING_RATE), loss: 'meanSquaredError'});
+//https://stats.stackexchange.com/questions/187335/validation-error-less-than-training-error/187404#187404
     let trainLoss;
     let valLoss;
-    await ui.updateStatus('Starting training process...');
+    await ui.updateStatus('Procesando entrenamiento...');
+    //recive parameters
+    NUM_EPOCHS = (document.getElementById('trainIterations')).value;
+    console.log('trainIterations: ' + (document.getElementById('trainIterations')).value);
+
+    BATCH_SIZE = parseInt((document.getElementById('batchSize')).value);
+    console.log('batchSize: ' + BATCH_SIZE);
+    
+        await bostonData.loadData();
+
+    ui.updateStatus('Data Cargada, convirtiendo a tensores');
+    arraysToTensors();
+    ui.updateStatus(
+            'Datos estan disponibles como tensores.\n' +
+            'Click para empezar a entrenar.');
+    ui.updateBaselineStatus('La estimación de la pérdida de la línea de base');
+    computeBaseline();
+    await ui.setup();
+    
+    
+    // 
     await model.fit(tensors.trainFeatures, tensors.trainTarget, {
         batchSize: BATCH_SIZE,
         epochs: NUM_EPOCHS,
@@ -159,9 +179,8 @@ export const run = async (model, weightsIllustration) => {
         }
     });
 
-    await ui.updateStatus('Running on test data...');
-    const result = model.evaluate(
-            tensors.testFeatures, tensors.testTarget, {batchSize: BATCH_SIZE});
+    await ui.updateStatus('Procesando datos de prueba...');
+    const result = model.evaluate(tensors.testFeatures, tensors.testTarget, {batchSize: BATCH_SIZE});
     const testLoss = result.dataSync()[0];
     await ui.updateStatus(
             `Final train-set loss: ${trainLoss.toFixed(4)}\n` +
@@ -171,22 +190,22 @@ export const run = async (model, weightsIllustration) => {
 
 export const computeBaseline = () => {
     const avgPrice = tf.mean(tensors.trainTarget);
-    console.log(`Average price: ${avgPrice.dataSync()}`);
+    console.log(`Promedio : ${avgPrice.dataSync()}`);
     const baseline = tf.mean(tf.pow(tf.sub(tensors.testTarget, avgPrice), 2));
-    console.log(`Baseline loss: ${baseline.dataSync()}`);
-    const baselineMsg = `Baseline loss (meanSquaredError) is ${
+    console.log(`Desviación de la media al cuadrado a la linea de Base: ${baseline.dataSync()}`);
+    const baselineMsg = `Desviación de la media al cuadrado a la linea de Base (meanSquaredError) es ${
             baseline.dataSync()[0].toFixed(2)}`;
     ui.updateBaselineStatus(baselineMsg);
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
     await bostonData.loadData();
-    ui.updateStatus('Data loaded, converting to tensors');
+    ui.updateStatus('Data Cargada, ... convirtiendo a tensores');
     arraysToTensors();
     ui.updateStatus(
-            'Data is now available as tensors.\n' +
-            'Click a train button to begin.');
-    ui.updateBaselineStatus('Estimating baseline loss');
+            'Datos estan disponibles como tensores.\n' +
+            'Click para empezar a entrenar.');
+    ui.updateBaselineStatus('La estimación de la pérdida de la línea de base');
     computeBaseline();
     await ui.setup();
 }, false);

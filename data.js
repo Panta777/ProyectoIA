@@ -75,7 +75,7 @@ export class BostonHousingDataset {
         this.testTarget = null;
     }
 
-    get numFeatures() {
+    get numFeatures() {//# de filas a evaluar
         // If numFetures is accessed before the data is loaded, raise an error.
         if (this.trainFeatures == null) {
             throw new Error('\'loadData()\' must be called before numFeatures')
@@ -96,11 +96,18 @@ export class BostonHousingDataset {
     }
 }
 
+//export const featureDescriptions = [//Descripcion Campos
+//    'Crime rate', 'Land zone size', 'Industrial proportion', 'Next to river',
+//    'Nitric oxide concentration', 'Number of rooms per house', 'Age of housing',
+//    'Distance to commute', 'Distance to highway', 'Tax rate', 'School class size',
+//    'School drop-out rate'
+//];
+
 export const featureDescriptions = [
-    'Crime rate', 'Land zone size', 'Industrial proportion', 'Next to river',
-    'Nitric oxide concentration', 'Number of rooms per house', 'Age of housing',
-    'Distance to commute', 'Distance to highway', 'Tax rate', 'School class size',
-    'School drop-out rate'
+   'Índice de criminalidad', 'Tamaño de la zona terrestre', 'Proporción industrial', 'Junto al río',
+     'Concentración de óxido nítrico', 'Número de habitaciones por casa', 'Edad de la vivienda',
+     'Distancia al viaje', 'Distancia a la autopista', 'Tasa de impuestos', 'Tamaño de la clase de la escuela',
+     'Tasa de abandono escolar'
 ];
 
 /**
